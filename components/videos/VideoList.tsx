@@ -54,6 +54,7 @@ const VideoList = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Media name</TableHead>
+                <TableHead>Hashed ID</TableHead>
                 <TableHead>File size</TableHead>
                 <TableHead>Download</TableHead>
               </TableRow>
@@ -62,6 +63,7 @@ const VideoList = () => {
               {videos.map((video) => (
                 <TableRow key={video.HashedID}>
                   <TableCell>{video.MediaName.EpisodeTitle}</TableCell>
+                  <TableCell>{video.HashedID}</TableCell>
                   <TableCell>{video.FilesizeMB} MB</TableCell>
                   <TableCell>
                     <a
