@@ -30,7 +30,6 @@ const VideoList = () => {
     try {
       const response = await GetPaginatedVideos(page, limit);
       setVideos(response || []);
-      console.log(response);
     } catch (error) {
       console.error(error);
     }

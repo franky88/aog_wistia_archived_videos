@@ -10,7 +10,6 @@ const api: AxiosInstance = axios.create({
 export const GetVideos = async (): Promise<WistiaVideo[] | undefined> => {
     try {
         const response = await api.get('/wistia/all');
-        console.log('response from api', response)
         return response.data
     } catch (error) {
         console.error("Error fetching videos:", error);
@@ -26,7 +25,6 @@ export const GetPaginatedVideos = async (page: number, limit: number): Promise<W
                 limit,
             },
         });
-        console.log('response from api', response);
         return response.data;
     } catch (error) {
         console.error("Error fetching videos:", error);
