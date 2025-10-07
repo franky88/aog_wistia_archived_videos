@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import SearchVideo from "@/components/videos/SearchVideo";
+import Navigation from "@/components/navigation";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,8 +29,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SearchVideo />
-        {children}
+        <main className="flex flex-col items-center">
+          <div className="flex flex-col items-start p-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold mb-5">
+                AdOnGroup Wistia Video Archived
+              </h2>
+            </div>
+
+            <Navigation />
+            {children}
+          </div>
+        </main>
       </body>
     </html>
   );

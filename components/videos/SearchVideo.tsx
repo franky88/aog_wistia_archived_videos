@@ -4,14 +4,14 @@ import { GetVideos } from "@/utils/api";
 import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 import CardVideo from "./CardVideo";
-import BlankCard from "./BlankCard";
-import Link from "next/link";
-import { Separator } from "../ui/separator";
 
 const SearchVideo = () => {
   const [videos, setVideos] = useState<WistiaVideo[]>([]);
   const [searchItems, setSearchItems] = useState<WistiaVideo[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [message, setMessage] = useState("");
 
   const fetchVideos = async () => {
     try {
@@ -26,52 +26,72 @@ const SearchVideo = () => {
     fetchVideos();
   }, []);
 
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const query = event.target.value.toLowerCase();
-    const filteredVideos = videos.filter(
-      (video) => video.HashedID.toLowerCase() === query
-    );
-    setSearchItems(filteredVideos);
+  const handleSearch = () => {
+    const query = searchTerm.toLowerCase().trim();
+
+    if (!query) {
+      setSearchItems([]);
+      return;
+    }
+
+    const filteredVideos = videos.filter((video) => {
+      return (
+        video.HashedID.toLowerCase().includes(query) ||
+        video.MediaName?.EpisodeTitle?.toLowerCase().includes(query) ||
+        video.Uploader?.toLowerCase().includes(query)
+      );
+    });
+
+    if (filteredVideos.length > 0) {
+      setSearchItems(filteredVideos);
+    } else {
+      setSearchItems([]);
+      setMessage("No videos found");
+    }
   };
 
   return (
     <div>
-      <div className="flex flex-col gap-3 items-center justify-center mt-14">
-        <div className="flex flex-col items-center justify-between">
-          <div className="flex h-5 items-center space-x-4 mb-10">
-            <Link className=" text-blue-300" href="/">
-              <small>Home</small>
-            </Link>
-            <Separator orientation="vertical" />
-            <Link className=" text-blue-300" href="/video">
-              <small>Video list</small>
-            </Link>
-          </div>
-          <strong className="ml-auto">AOG Archived Wistia Videos</strong>
+      <div className="flex flex-col gap-3 items-center justify-center mt-5">
+        <div className="w-[800px] relative flex items-center">
+          <Search className="absolute left-2.5 top-3 h-6 w-6 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Search wistia videos"
+            name="search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full h-12 bg-background pl-10 pr-28 rounded-xl shadow-none"
+          />
+          <Button
+            type="button"
+            onClick={handleSearch}
+            className="absolute right-2 top-2 h-8 px-4 rounded-lg"
+          >
+            Search
+          </Button>
         </div>
 
-        <form className="w-[800px]">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search wistia video hashed ID..."
-              name="search"
-              className="w-full appearance-none bg-background pl-8 shadow-none"
-              onChange={handleSearch}
-            />
-          </div>
-        </form>
-
-        {(searchItems.length > 0 ? searchItems : []).map((video) => (
-          <CardVideo
-            key={video.HashedID}
-            name={video.MediaName.EpisodeTitle}
-            filesize={video.FilesizeMB}
-            downloadLink={video.DownloadLink}
-            filename={`${video.MediaName.EpisodeTitle}.mp4`}
-          />
-        )) ?? <BlankCard></BlankCard>}
+        <div className="mt-5 w-[800px]">
+          {searchItems.length > 0 ? (
+            searchItems.map((video) => (
+              <CardVideo
+                key={video.HashedID}
+                name={video.MediaName.EpisodeTitle}
+                filesize={video.FilesizeMB}
+                downloadLink={video.DownloadLink}
+                filename={`${video.MediaName.EpisodeTitle}.mp4`}
+                uploader={video.Uploader}
+                recentplay={video.MostRecentPlay}
+                uploaded={video.CreatedAt.split(" ")[0]}
+              />
+            ))
+          ) : (
+            <div>
+              <h3>{message ? `${message} for ${searchTerm}` : null}</h3>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

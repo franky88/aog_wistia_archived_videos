@@ -1,12 +1,17 @@
+import { Download } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { Separator } from "../ui/separator";
 
 interface Video {
   name: string;
   filesize: number;
   downloadLink: string;
   filename: string;
+  uploader: string;
+  recentplay: string;
+  uploaded: string;
 }
 
 const CardVideo: React.FC<Video> = ({
@@ -14,28 +19,42 @@ const CardVideo: React.FC<Video> = ({
   filesize,
   downloadLink,
   filename,
+  uploader,
+  recentplay,
+  uploaded,
 }) => {
   return (
-    <Card>
+    <Card className="w-[800px] mb-5 shadow-none">
       <CardHeader>
-        <CardTitle>{name}</CardTitle>
+        <CardTitle>
+          <div className="flex items-center justify-between">
+            {name}
+            <a href={downloadLink} download={filename}>
+              <Button variant="outline" className="h-7">
+                <Download className="h-4 w-4" />
+              </Button>
+            </a>
+          </div>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex gap-4">
           <Avatar>
             <AvatarImage
-              className="rounded-sm bg-slate-200 p-5"
+              className="rounded-lg h-20 bg-slate-200 p-5"
               src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWZpbG0iPjxyZWN0IHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCIgeD0iMyIgeT0iMyIgcng9IjIiLz48cGF0aCBkPSJNNyAzdjE4Ii8+PHBhdGggZD0iTTMgNy41aDQiLz48cGF0aCBkPSJNMyAxMmgxOCIvPjxwYXRoIGQ9Ik0zIDE2LjVoNCIvPjxwYXRoIGQ9Ik0xNyAzdjE4Ii8+PHBhdGggZD0iTTE3IDcuNWg0Ii8+PHBhdGggZD0iTTE3IDE2LjVoNCIvPjwvc3ZnPg=="
             />
             <AvatarFallback>VI</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col gap-4">
-            <small>File size: {filesize}MB</small>
-            <a href={downloadLink} download={filename}>
-              <Button variant="outline" className="h-7">
-                Download
-              </Button>
-            </a>
+          <div className="flex flex-col items-start justify-between">
+            <div className="flex flex-col">
+              <small>File size: {filesize}MB</small>
+              <small>Last played: {recentplay}</small>
+            </div>
+
+            <small className="text-muted-foreground">
+              Date uploaded: {uploaded} | by: {uploader}
+            </small>
           </div>
         </div>
       </CardContent>
