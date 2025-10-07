@@ -2,7 +2,6 @@ import { Download } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { Separator } from "../ui/separator";
 
 interface Video {
   name: string;
