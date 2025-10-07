@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
@@ -12,6 +14,7 @@ export async function GET(request: Request) {
     if (!Array.isArray(videos)) {
       throw new Error('The "videos" key does not contain an array');
     }
+
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get("page") || "1", 10);
     const limit = parseInt(url.searchParams.get("limit") || "10", 10);
