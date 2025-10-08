@@ -16,7 +16,6 @@ const SearchVideo = () => {
   const [videos, setVideos] = useState<WistiaVideo[]>([]);
   const [searchItems, setSearchItems] = useState<WistiaVideo[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [message, setMessage] = useState("");
   const [totalSearchVideos, setTotalSearchVideos] = useState(0);
 
   const fetchVideos = async () => {
@@ -37,7 +36,6 @@ const SearchVideo = () => {
 
     if (!query) {
       setSearchItems([]);
-      setMessage("");
       setTotalSearchVideos(0);
       return;
     }
@@ -53,10 +51,8 @@ const SearchVideo = () => {
     if (filteredVideos.length > 0) {
       setSearchItems(filteredVideos);
       setTotalSearchVideos(filteredVideos.length);
-      setMessage("Videos found for");
     } else {
       setSearchItems([]);
-      setMessage("No videos found");
       setTotalSearchVideos(0);
     }
   };
@@ -75,7 +71,6 @@ const SearchVideo = () => {
       handleSearch(query);
     } else {
       setSearchItems([]);
-      setMessage("");
     }
   }, [searchParams, videos]);
 
@@ -126,24 +121,6 @@ const SearchVideo = () => {
               uploaded={video.CreatedAt.split(" ")[0]}
             />
           ))}
-          {/* {searchItems.length > 0 ? (
-            searchItems.map((video) => (
-              <CardVideo
-                key={video.HashedID}
-                name={video.MediaName.EpisodeTitle}
-                filesize={video.FilesizeMB}
-                downloadLink={video.DownloadLink}
-                filename={`${video.MediaName.EpisodeTitle}.mp4`}
-                uploader={video.Uploader}
-                recentplay={video.MostRecentPlay}
-                uploaded={video.CreatedAt.split(" ")[0]}
-              />
-            ))
-          ) : (
-            <div>
-              <h3>{message ? `${message} for "${searchTerm}"` : null}</h3>
-            </div>
-          )} */}
         </div>
       </div>
     </div>
