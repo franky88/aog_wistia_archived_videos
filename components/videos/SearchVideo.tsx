@@ -2,12 +2,16 @@
 
 import { GetVideos } from "@/utils/api";
 import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import CardVideo from "./CardVideo";
 
 const SearchVideo = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [videos, setVideos] = useState<WistiaVideo[]>([]);
   const [searchItems, setSearchItems] = useState<WistiaVideo[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,11 +30,12 @@ const SearchVideo = () => {
     fetchVideos();
   }, []);
 
-  const handleSearch = () => {
-    const query = searchTerm.toLowerCase().trim();
+  const handleSearch = (term?: string) => {
+    const query = (term ?? searchTerm).toLowerCase().trim();
 
     if (!query) {
       setSearchItems([]);
+      setMessage("");
       return;
     }
 
@@ -44,16 +49,38 @@ const SearchVideo = () => {
 
     if (filteredVideos.length > 0) {
       setSearchItems(filteredVideos);
+      setMessage("");
     } else {
       setSearchItems([]);
       setMessage("No videos found");
     }
   };
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // prevent page reload
+    const encoded = encodeURIComponent(searchTerm.trim());
+    router.push(`?search=${encoded}`);
+    handleSearch();
+  };
+
+  useEffect(() => {
+    const query = searchParams.get("search");
+    if (query) {
+      setSearchTerm(query);
+      handleSearch(query);
+    } else {
+      setSearchItems([]);
+      setMessage("");
+    }
+  }, [searchParams, videos]);
+
   return (
     <div>
       <div className="flex flex-col gap-3 items-center justify-center mt-5">
-        <div className="w-[800px] relative flex items-center">
+        <form
+          onSubmit={handleSubmit}
+          className="w-[800px] relative flex items-center"
+        >
           <Search className="absolute left-2.5 top-3 h-6 w-6 text-muted-foreground" />
           <Input
             type="text"
@@ -64,14 +91,12 @@ const SearchVideo = () => {
             className="w-full h-12 bg-background pl-10 pr-28 rounded-xl shadow-none"
           />
           <Button
-            type="button"
-            onClick={handleSearch}
+            type="submit"
             className="absolute right-2 top-2 h-8 px-4 rounded-lg"
           >
             Search
           </Button>
-        </div>
-
+        </form>
         <div className="mt-5 w-[800px]">
           {searchItems.length > 0 ? (
             searchItems.map((video) => (
@@ -88,7 +113,7 @@ const SearchVideo = () => {
             ))
           ) : (
             <div>
-              <h3>{message ? `${message} for ${searchTerm}` : null}</h3>
+              <h3>{message ? `${message} for "${searchTerm}"` : null}</h3>
             </div>
           )}
         </div>

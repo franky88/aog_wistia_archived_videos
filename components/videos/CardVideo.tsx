@@ -22,17 +22,32 @@ const CardVideo: React.FC<Video> = ({
   recentplay,
   uploaded,
 }) => {
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(downloadLink);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download failed:", error);
+    }
+  };
+
   return (
     <Card className="w-[800px] mb-5 shadow-none">
       <CardHeader>
         <CardTitle>
           <div className="flex items-center justify-between">
             {name}
-            <a href={downloadLink} download={filename}>
-              <Button variant="outline" className="h-7">
-                <Download className="h-4 w-4" />
-              </Button>
-            </a>
+            <Button variant="outline" className="h-7" onClick={handleDownload}>
+              <Download className="h-4 w-4" />
+            </Button>
           </div>
         </CardTitle>
       </CardHeader>

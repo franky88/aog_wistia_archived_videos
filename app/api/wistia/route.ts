@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     const endIndex = startIndex + limit;
     const paginatedVideos = videos.slice(startIndex, endIndex);
 
-    return NextResponse.json(paginatedVideos);
+    return NextResponse.json({ data: paginatedVideos, total: videos.length });
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error("Error reading or parsing file:", error);

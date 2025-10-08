@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from "axios";
 
 const api: AxiosInstance = axios.create({
   baseURL: "https://aog-wistia-archived-videos.vercel.app/api",
+  // baseURL: "http://localhost:3000/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -20,7 +21,7 @@ export const GetVideos = async (): Promise<WistiaVideo[] | undefined> => {
 export const GetPaginatedVideos = async (
   page: number,
   limit: number
-): Promise<WistiaVideo[] | undefined> => {
+): Promise<Video | null> => {
   try {
     const response = await api.get("/wistia", {
       params: {
