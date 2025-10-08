@@ -7,6 +7,7 @@ import { Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import CardVideo from "./CardVideo";
+import { Badge } from "../ui/badge";
 
 const SearchVideo = () => {
   const router = useRouter();
@@ -16,6 +17,7 @@ const SearchVideo = () => {
   const [searchItems, setSearchItems] = useState<WistiaVideo[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [message, setMessage] = useState("");
+  const [totalSearchVideos, setTotalSearchVideos] = useState(0);
 
   const fetchVideos = async () => {
     try {
@@ -36,6 +38,7 @@ const SearchVideo = () => {
     if (!query) {
       setSearchItems([]);
       setMessage("");
+      setTotalSearchVideos(0);
       return;
     }
 
@@ -49,15 +52,17 @@ const SearchVideo = () => {
 
     if (filteredVideos.length > 0) {
       setSearchItems(filteredVideos);
-      setMessage("");
+      setTotalSearchVideos(filteredVideos.length);
+      setMessage("Videos found for");
     } else {
       setSearchItems([]);
       setMessage("No videos found");
+      setTotalSearchVideos(0);
     }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // prevent page reload
+    e.preventDefault();
     const encoded = encodeURIComponent(searchTerm.trim());
     router.push(`?search=${encoded}`);
     handleSearch();
@@ -97,8 +102,31 @@ const SearchVideo = () => {
             Search
           </Button>
         </form>
+        <div className="w-full flex items-start mt-3">
+          <h3 className="text-lg font-bold items-center">
+            {totalSearchVideos > 1 ? "Videos" : "Video"} found for{" "}
+            {searchTerm ? <u>{searchTerm}</u> : "none"}{" "}
+            {totalSearchVideos > 1 ? "are" : "is"}{" "}
+            <Badge className="h-7 font-bold" variant={"outline"}>
+              {totalSearchVideos}
+            </Badge>
+          </h3>
+        </div>
+
         <div className="mt-5 w-[800px]">
-          {searchItems.length > 0 ? (
+          {searchItems.map((video) => (
+            <CardVideo
+              key={video.HashedID}
+              name={video.MediaName.EpisodeTitle}
+              filesize={video.FilesizeMB}
+              downloadLink={video.DownloadLink}
+              filename={`${video.MediaName.EpisodeTitle}.mp4`}
+              uploader={video.Uploader}
+              recentplay={video.MostRecentPlay}
+              uploaded={video.CreatedAt.split(" ")[0]}
+            />
+          ))}
+          {/* {searchItems.length > 0 ? (
             searchItems.map((video) => (
               <CardVideo
                 key={video.HashedID}
@@ -115,7 +143,7 @@ const SearchVideo = () => {
             <div>
               <h3>{message ? `${message} for "${searchTerm}"` : null}</h3>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>
