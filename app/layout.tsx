@@ -32,13 +32,13 @@ export default function RootLayout({
       >
         <main className="flex flex-col items-center justify-between h-screen">
           <div className="flex flex-col items-start p-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold mb-5">
+            <Navigation />
+            <div className="w-full flex items-center justify-center mt-8">
+              <h2 className="text-3xl font-bold">
                 AdOnGroup Wistia Video Archived
               </h2>
             </div>
 
-            <Navigation />
             {children}
           </div>
           <FooterPage />
