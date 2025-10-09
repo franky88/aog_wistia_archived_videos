@@ -72,8 +72,8 @@ const CardVideo: React.FC<Video> = ({
   };
 
   return (
-    <div className="w-full border px-1 rounded-xl bg-white mb-5 shadow-none">
-      <div className="p-4">
+    <div className="w-full border px-1 rounded-xl bg-white mb-1 shadow-none">
+      <div className="p-2">
         <div className="flex items-start justify-between">
           <div className="flex gap-4 text-slate-800">
             <Image

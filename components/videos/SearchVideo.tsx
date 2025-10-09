@@ -7,6 +7,13 @@ import { Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import CardVideo from "./CardVideo";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "../ui/pagination";
 
 const SearchVideo = () => {
   const router = useRouter();
@@ -16,6 +23,9 @@ const SearchVideo = () => {
   const [searchItems, setSearchItems] = useState<WistiaVideo[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [totalSearchVideos, setTotalSearchVideos] = useState(0);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const fetchVideos = async () => {
     try {
@@ -36,6 +46,7 @@ const SearchVideo = () => {
     if (!query) {
       setSearchItems([]);
       setTotalSearchVideos(0);
+      setCurrentPage(1);
       return;
     }
 
@@ -47,13 +58,9 @@ const SearchVideo = () => {
       );
     });
 
-    if (filteredVideos.length > 0) {
-      setSearchItems(filteredVideos);
-      setTotalSearchVideos(filteredVideos.length);
-    } else {
-      setSearchItems([]);
-      setTotalSearchVideos(0);
-    }
+    setSearchItems(filteredVideos);
+    setTotalSearchVideos(filteredVideos.length);
+    setCurrentPage(1);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -73,6 +80,28 @@ const SearchVideo = () => {
     }
   }, [searchParams, videos]);
 
+  useEffect(() => {
+    if (searchTerm.trim()) {
+      handleSearch(searchTerm);
+    } else {
+      setSearchItems([]);
+      setTotalSearchVideos(0);
+    }
+  }, [searchTerm]);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = searchItems.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(searchItems.length / itemsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
+
   return (
     <div>
       <div className="flex flex-col gap-3 items-center justify-center mt-5">
@@ -83,7 +112,7 @@ const SearchVideo = () => {
           <Search className="absolute left-2.5 top-3 h-6 w-6 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Search wistia videos"
+            placeholder="Search videos"
             name="search"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -96,26 +125,71 @@ const SearchVideo = () => {
             Search
           </Button>
         </form>
-        <div className="w-full flex items-start mt-3">
-          <h3 className="text-lg font-bold items-center">
-            {totalSearchVideos} {totalSearchVideos > 1 ? "videos" : "video"}{" "}
-            found for {searchTerm ? <u>{searchTerm}</u> : "....."}
-          </h3>
+
+        <div className="flex items-center justify-center">
+          {searchTerm ? (
+            <small className="flex items-center gap-3 px-4 py-2 text-muted-foreground">
+              <span>
+                {totalSearchVideos} {totalSearchVideos > 1 ? "videos" : "video"}{" "}
+                found for {searchTerm}
+              </span>
+            </small>
+          ) : null}
         </div>
 
-        <div className="mt-5 w-[800px]">
-          {searchItems.map((video) => (
-            <CardVideo
-              key={video.HashedID}
-              name={video.MediaName.EpisodeTitle}
-              filesize={video.FilesizeMB}
-              downloadLink={video.DownloadLink}
-              filename={`${video.MediaName.EpisodeTitle}.mp4`}
-              uploader={video.Uploader}
-              recentplay={video.MostRecentPlay}
-              uploaded={video.CreatedAt.split(" ")[0]}
-            />
-          ))}
+        <div className="mb-2 w-full">
+          {currentItems.length > 0 ? (
+            <>
+              {currentItems.map((video) => (
+                <CardVideo
+                  key={video.HashedID}
+                  name={video.MediaName.EpisodeTitle}
+                  filesize={video.FilesizeMB}
+                  downloadLink={video.DownloadLink}
+                  filename={`${video.MediaName.EpisodeTitle}.mp4`}
+                  uploader={video.Uploader}
+                  recentplay={video.MostRecentPlay}
+                  uploaded={video.CreatedAt.split(" ")[0]}
+                />
+              ))}
+
+              <div className="flex justify-center mt-5">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={handlePreviousPage}
+                        className={
+                          currentPage === 1
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                        }
+                      />
+                    </PaginationItem>
+                    <span className="px-4 py-2 text-sm">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={handleNextPage}
+                        className={
+                          currentPage === totalPages
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                        }
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            </>
+          ) : (
+            searchTerm && (
+              <p className="text-muted-foreground text-sm text-center mt-10">
+                No videos found.
+              </p>
+            )
+          )}
         </div>
       </div>
     </div>

@@ -18,11 +18,12 @@ import {
   SelectValue,
 } from "../ui/select";
 import VideoDetails from "./VideoDetails";
+import { Button } from "../ui/button"; // ✅ needed for numeric buttons
 
 const VideoList = () => {
   const [videos, setVideos] = useState<WistiaVideo[]>([]);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(5);
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
 
@@ -43,8 +44,33 @@ const VideoList = () => {
     fetchVideos();
   }, [page, limit]);
 
-  const nextPage = () => setPage((prevPage) => prevPage + 1);
-  const prevPage = () => setPage((prevPage) => Math.max(prevPage - 1, 1));
+  const totalPages = Math.ceil(total / limit);
+
+  const nextPage = () => {
+    if (page < totalPages) setPage((prevPage) => prevPage + 1);
+  };
+
+  const prevPage = () => {
+    if (page > 1) setPage((prevPage) => prevPage - 1);
+  };
+
+  const goToPage = (pageNum: number) => {
+    if (pageNum !== page) setPage(pageNum);
+  };
+
+  const getVisiblePages = () => {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    let start = Math.max(1, page - Math.floor(maxVisible / 2));
+    let end = Math.min(totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
+  };
 
   return (
     <div className="mt-5">
@@ -83,36 +109,59 @@ const VideoList = () => {
             <h3>Loading videos...</h3>
           </div>
         )}
-        {videos.map((video) => (
-          <VideoDetails
-            key={video.HashedID}
-            hashedId={video.HashedID}
-            title={video.MediaName.EpisodeTitle}
-            downloadLink={video.DownloadLink}
-            fileSized={video.FilesizeMB}
-          />
-        ))}
+
+        {!loading && videos.length === 0 && (
+          <div className="p-6 text-muted-foreground">No videos found.</div>
+        )}
+
+        {!loading &&
+          videos.map((video) => (
+            <VideoDetails
+              key={video.HashedID}
+              hashedId={video.HashedID}
+              title={video.MediaName.EpisodeTitle}
+              downloadLink={video.DownloadLink}
+              fileSized={video.FilesizeMB}
+            />
+          ))}
       </div>
 
-      <div className="w-full text-right">
-        <Pagination className="mt-5 text-right">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious onClick={prevPage} isActive={page > 1}>
-                Previous
-              </PaginationPrevious>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext
-                onClick={nextPage}
-                isActive={page * limit < total}
-              >
-                Next
-              </PaginationNext>
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
+      {total > 0 && (
+        <div className="w-full flex justify-center mt-6">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={prevPage}
+                  className={page === 1 ? "opacity-50 cursor-not-allowed" : ""}
+                />
+              </PaginationItem>
+
+              {getVisiblePages().map((pageNum) => (
+                <PaginationItem key={pageNum}>
+                  <Button
+                    variant={pageNum === page ? "default" : "outline"}
+                    size="sm"
+                    className="rounded-md mx-1"
+                    onClick={() => goToPage(pageNum)}
+                  >
+                    {pageNum}
+                  </Button>
+                </PaginationItem>
+              ))}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={nextPage}
+                  className={
+                    page === totalPages ? "opacity-50 cursor-not-allowed" : ""
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 };
