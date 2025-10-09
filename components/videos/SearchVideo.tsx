@@ -7,7 +7,6 @@ import { Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import CardVideo from "./CardVideo";
-import { Badge } from "../ui/badge";
 
 const SearchVideo = () => {
   const router = useRouter();
@@ -99,12 +98,8 @@ const SearchVideo = () => {
         </form>
         <div className="w-full flex items-start mt-3">
           <h3 className="text-lg font-bold items-center">
-            {totalSearchVideos > 1 ? "Videos" : "Video"} found for{" "}
-            {searchTerm ? <u>{searchTerm}</u> : "none"}{" "}
-            {totalSearchVideos > 1 ? "are" : "is"}{" "}
-            <Badge className="h-7 font-bold" variant={"outline"}>
-              {totalSearchVideos}
-            </Badge>
+            {totalSearchVideos} {totalSearchVideos > 1 ? "videos" : "video"}{" "}
+            found for {searchTerm ? <u>{searchTerm}</u> : "....."}
           </h3>
         </div>
 

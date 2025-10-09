@@ -77,7 +77,7 @@ const VideoList = () => {
         </div>
       </div>
 
-      <div className="w-[800px] mt-5 border rounded-none bg-white text-slate-800">
+      <div className="w-[800px] mt-5 rounded-none bg-white text-slate-800">
         {loading && (
           <div className="p-6">
             <h3>Loading videos...</h3>

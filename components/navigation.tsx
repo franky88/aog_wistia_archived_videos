@@ -10,7 +10,7 @@ import {
 
 const navigation = () => {
   return (
-    <div>
+    <div className="w-full flex items-center justify-center">
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>

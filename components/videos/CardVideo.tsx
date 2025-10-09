@@ -2,8 +2,7 @@
 
 import { Download } from "lucide-react";
 import { Button } from "../ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import Image from "next/image";
 import { useState } from "react";
 
 interface Video {
@@ -73,52 +72,47 @@ const CardVideo: React.FC<Video> = ({
   };
 
   return (
-    <Card className="w-[800px] mb-5 shadow-none">
-      <CardHeader>
-        <CardTitle>
-          <div className="flex items-center justify-between">
-            {name}
-            <Button
-              variant="outline"
-              className="h-7"
-              onClick={handleDownload}
-              disabled={loading}
-            >
-              {loading ? `${progress}%` : <Download className="h-4 w-4" />}
-            </Button>
-          </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex gap-4">
-          <Avatar>
-            <AvatarImage
-              className="rounded-lg h-20 bg-slate-200 p-5"
-              src="/images/placeholder.jpg"
+    <div className="w-full border px-1 rounded-xl bg-white mb-5 shadow-none">
+      <div className="p-4">
+        <div className="flex items-start justify-between">
+          <div className="flex gap-4 text-slate-800">
+            <Image
+              src={"/images/placeholder.jpg"}
+              width={150}
+              height={150}
+              alt="ph"
             />
-            <AvatarFallback>VI</AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col items-start justify-between w-full">
-            <div className="flex flex-col">
-              <small>File size: {filesize}MB</small>
-              <small>Last played: {recentplay}</small>
-            </div>
-            <small className="text-muted-foreground">
-              Date uploaded: {uploaded} | by: {uploader}
-            </small>
-
-            {loading && (
-              <div className="w-full h-2 bg-gray-200 rounded-full mt-3">
-                <div
-                  className="h-2 bg-blue-500 rounded-full transition-all"
-                  style={{ width: `${progress}%` }}
-                />
+            <div className="flex flex-col items-start justify-between w-full">
+              <h3 className="font-bold">{name}</h3>
+              <div className="flex flex-col">
+                <small>File size: {filesize}MB</small>
+                <small>Last played: {recentplay}</small>
               </div>
-            )}
+              <small className="text-muted-foreground">
+                Date uploaded: {uploaded} | by: {uploader}
+              </small>
+            </div>
           </div>
+          <Button
+            variant="default"
+            className="h-7"
+            onClick={handleDownload}
+            disabled={loading}
+          >
+            {loading ? `${progress}%` : <Download className="h-4 w-4" />}
+          </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+
+      {loading && (
+        <div className="w-full h-1 bg-gray-200 rounded-lg">
+          <div
+            className="h-1 bg-blue-500 rounded-lg transition-all"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      )}
+    </div>
   );
 };
 

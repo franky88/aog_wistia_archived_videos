@@ -2,8 +2,8 @@
 
 import { Download } from "lucide-react";
 import { Button } from "../ui/button";
-import { Table, TableBody, TableCell, TableRow } from "../ui/table";
 import { useState } from "react";
+import Image from "next/image";
 
 interface VideoDetailsProps {
   hashedId: string;
@@ -71,55 +71,57 @@ const VideoDetails = ({
     }
   };
   return (
-    <Table className="w-full rounded-none">
-      <TableBody>
-        <TableRow>
-          <TableCell className="border-b">
-            <div className="px-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold">{title}</h3>
-                <div>
-                  <Button
-                    variant="outline"
-                    className="h-7"
-                    onClick={() =>
-                      handleDownload({
-                        downloadLink: downloadLink,
-                        filename: `${title}.mp4`,
-                      })
-                    }
-                    disabled={downloadLoading}
-                  >
-                    {downloadLoading ? (
-                      `${progress}%`
-                    ) : (
-                      <Download className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <small className="text-muted-foreground">
-                  Hashed ID: <strong>{hashedId.toUpperCase()}</strong>
-                </small>
-                <small className="text-muted-foreground">
-                  Size: {fileSized} MB
-                </small>
-              </div>
+    <div className="border hover:bg-slate-100/30 mb-1 rounded-lg">
+      <div className="flex items-start justify-between px-4 py-2">
+        <div className="flex items-center gap-2">
+          <div>
+            <Image
+              src={"/images/placeholder.jpg"}
+              width={150}
+              height={150}
+              alt="ph"
+            />
+          </div>
+          <div className="flex flex-col">
+            <h3 className="text-lg font-bold">{title}</h3>
+            <small className="text-muted-foreground">
+              Hashed ID: <strong>{hashedId.toUpperCase()}</strong>
+            </small>
+            <small className="text-muted-foreground">
+              Size: {fileSized} MB
+            </small>
+          </div>
+        </div>
 
-              {downloadLoading && (
-                <div className="w-full h-2 bg-gray-200 rounded-full mt-3">
-                  <div
-                    className="h-2 bg-blue-500 rounded-full transition-all"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-              )}
-            </div>
-          </TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
+        <div>
+          <Button
+            variant="outline"
+            className="h-7"
+            onClick={() =>
+              handleDownload({
+                downloadLink: downloadLink,
+                filename: `${title}.mp4`,
+              })
+            }
+            disabled={downloadLoading}
+          >
+            {downloadLoading ? (
+              `${progress}%`
+            ) : (
+              <Download className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+      </div>
+      {downloadLoading && (
+        <div className="w-full h-1 bg-gray-200 rounded-none">
+          <div
+            className="h-1 bg-blue-500 rounded-none transition-all"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      )}
+    </div>
   );
 };
 
